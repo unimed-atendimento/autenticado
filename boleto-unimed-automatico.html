@@ -476,13 +476,25 @@ async function copiarLinhaDigitavel(){
 
 function salvar(){
   if(!boletoAtual)return;
+
+  // Fecha o aviso de cópia, caso esteja aberto.
+  fecharAvisoCopia();
+
   const nomeCliente=(boletoAtual.nome||'BOLETO UNIMED').trim().toUpperCase();
   const nomeArquivo=nomeCliente.replace(/[\\/:*?"<>|]/g,'').replace(/\s+/g,' ').trim();
   const tituloAnterior=document.title;
   document.title=nomeArquivo;
-  const restaurarTitulo=()=>{document.title=tituloAnterior;window.removeEventListener('afterprint',restaurarTitulo);};
+
+  const restaurarTitulo=()=>{
+    document.title=tituloAnterior;
+    window.removeEventListener('afterprint',restaurarTitulo);
+  };
+
   window.addEventListener('afterprint',restaurarTitulo);
-  setTimeout(()=>window.print(),150);
+
+  // Chamada direta é importante no Safari/iPhone:
+  // mantém a impressão ligada ao clique do usuário.
+  window.print();
 }
 
 window.addEventListener('DOMContentLoaded',consultarBoleto);
